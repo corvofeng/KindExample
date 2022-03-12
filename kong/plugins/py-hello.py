@@ -1,3 +1,4 @@
+import os
 import kong_pdk.pdk.kong as kong
 
 Schema = (
@@ -8,6 +9,9 @@ version = '0.1.0'
 priority = 0
 
 class Plugin(object):
+    def __init__(self, config):
+        self.config = config
+
     def access(self, kong: kong.kong):
         host, err = kong.request.get_header("host")
         if err:
@@ -22,6 +26,7 @@ class Plugin(object):
             message = self.config['message']
         kong.response.set_header("x-hello-from-python", "Python says %s to %s" % (message, host))
         kong.response.set_header("x-python-pid", str(os.getpid()))
+
 
 if __name__ == "__main__":
     from kong_pdk.cli import start_dedicated_server

@@ -1,9 +1,26 @@
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+plugin: py-hello
+metadata:
+  name: py-hello
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  message: "myMessage"
+#   var1: "myVariable"
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: productpage
   namespace: bookinfo
+  # annotations:
+  #   konghq.com/plugins: py-hello
 spec:
   ingressClassName: kong
   rules:
