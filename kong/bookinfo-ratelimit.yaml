@@ -1,0 +1,31 @@
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: rate-limit
+  namespace: bookinfo
+plugin: rate-limiting
+config:
+  minute: 5
+  policy: local
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: productpage
+  namespace: bookinfo
+  annotations:
+    konghq.com/plugins: rate-limit
+spec:
+  ingressClassName: kong
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: productpage
+            port:
+              number: 9080
+
