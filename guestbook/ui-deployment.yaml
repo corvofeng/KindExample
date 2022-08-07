@@ -39,6 +39,7 @@ spec:
       - name: guestbook-ui
         image: argoproj/rollouts-demo:blue
 
+  strategy:
     canary:
       # Reference to a Service which the controller will update to point to the canary ReplicaSet
       steps:  # 发布的节奏
