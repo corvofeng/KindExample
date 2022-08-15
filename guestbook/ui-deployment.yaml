@@ -1,32 +1,10 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: guestbook-ui
-# spec:
-#   replicas: 1
-#   revisionHistoryLimit: 3
-#   selector:
-#     matchLabels:
-#       app: guestbook-ui
-#   template:
-#     metadata:
-#       labels:
-#         app: guestbook-ui
-#     spec:
-#       containers:
-#       - image: argoproj/rollouts-demo:blue
-#         name: guestbook-ui
-#         ports:
-#         - containerPort: 8080
-
----
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: guestbook-ui
 spec:
-  replicas: 2
-  revisionHistoryLimit: 2
+  replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: guestbook-ui
@@ -36,28 +14,50 @@ spec:
         app: guestbook-ui
     spec:
       containers:
-      - name: guestbook-ui
-        image: argoproj/rollouts-demo:blue
+      - image: argoproj/rollouts-demo:blue
+        name: guestbook-ui
+        ports:
+        - containerPort: 8080
 
-  strategy:
-    canary:
-      # Reference to a Service which the controller will update to point to the canary ReplicaSet
-      steps:  # 发布的节奏
-      - setWeight: 20
-      - pause: {}  # 会一直暂停
-      - setWeight: 40
-      - pause: {duration: 10}
-      - setWeight: 60
-      - pause: {duration: 10}
-      - setWeight: 80
-      - pause: {duration: 10}
-
-      canaryService: guestbook-ui-canary
-      # Reference to a Service which the controller will update to point to the stable ReplicaSet
-      stableService: guestbook-ui-stable
-      trafficRouting:
-        nginx:
-          # Reference to an Ingress which has a rule pointing to the stable service (e.g. rollouts-demo-stable)
-          # This ingress will be cloned with a new name, in order to achieve NGINX traffic splitting.
-          stableIngress: guestbook-ui-stable
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Rollout
+# metadata:
+#   name: guestbook-ui
+# spec:
+#   replicas: 2
+#   revisionHistoryLimit: 2
+#   selector:
+#     matchLabels:
+#       app: guestbook-ui
+#   template:
+#     metadata:
+#       labels:
+#         app: guestbook-ui
+#     spec:
+#       containers:
+#       - name: guestbook-ui
+#         image: argoproj/rollouts-demo:blue
+# 
+#   strategy:
+#     canary:
+#       # Reference to a Service which the controller will update to point to the canary ReplicaSet
+#       steps:  # 发布的节奏
+#       - setWeight: 20
+#       - pause: {}  # 会一直暂停
+#       - setWeight: 40
+#       - pause: {duration: 10}
+#       - setWeight: 60
+#       - pause: {duration: 10}
+#       - setWeight: 80
+#       - pause: {duration: 10}
+# 
+#       canaryService: guestbook-ui-canary
+#       # Reference to a Service which the controller will update to point to the stable ReplicaSet
+#       stableService: guestbook-ui-stable
+#       trafficRouting:
+#         nginx:
+#           # Reference to an Ingress which has a rule pointing to the stable service (e.g. rollouts-demo-stable)
+#           # This ingress will be cloned with a new name, in order to achieve NGINX traffic splitting.
+#           stableIngress: guestbook-ui-stable
 
